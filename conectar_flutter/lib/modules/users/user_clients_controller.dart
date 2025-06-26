@@ -5,7 +5,7 @@ import 'package:go_router/go_router.dart';
 import '../../core/models/client_model.dart';
 import '../../core/data/clients_mock_data.dart';
 
-class ClientsController extends GetxController with StateMixin<List<ClientModel>> {
+class UserClientsController extends GetxController with StateMixin<List<ClientModel>> {
   // Controllers dos filtros
   final nomeController = TextEditingController();
   final cnpjController = TextEditingController();
@@ -14,8 +14,6 @@ class ClientsController extends GetxController with StateMixin<List<ClientModel>
 
   // Estado dos filtros
   final isFiltersExpanded = false.obs;
-
-  // Usa o mock global de clientes
 
   // Lista filtrada para a UI
   final RxList<ClientModel> filteredClients = <ClientModel>[].obs;
@@ -99,36 +97,12 @@ class ClientsController extends GetxController with StateMixin<List<ClientModel>
     });
   }
 
-  void navigateToNewClient(BuildContext context) {
-    // Navega para a página de novo cliente usando GoRouter
-    GoRouter.of(context).go('/admin/clients/new');
-  }
-
+  // Método para navegar para edição (disponível para usuários)
   void navigateToEditClient(BuildContext context, String clientId) {
-    // Navega para a página de edição usando GoRouter
-    GoRouter.of(context).go('/admin/clients/edit/$clientId');
+    GoRouter.of(context).go('/user/clients/edit/$clientId');
   }
 
-  Future<void> deleteClient(String clientId) async {
-    try {
-      ClientsMockData.removeClient(clientId);
-      applyFilters();
-    } catch (e) {}
-  }
-
-  void addClient(ClientModel newClient) {
-    final wasAdded = ClientsMockData.addClient(newClient);
-    
-    if (!wasAdded) {
-      return;
-    }
-    
-    final allClients = ClientsMockData.getAllClients();
-    filteredClients.value = allClients;
-    
-    change(allClients, status: RxStatus.success());
-  }
-
+  // Método para atualizar cliente (disponível para usuários)
   void updateClient(ClientModel updatedClient) {
     ClientsMockData.updateClient(updatedClient);
     
@@ -140,4 +114,9 @@ class ClientsController extends GetxController with StateMixin<List<ClientModel>
     final allClients = ClientsMockData.getAllClients();
     change(allClients, status: RxStatus.success());
   }
-}
+
+  // Métodos NÃO disponíveis para usuários comuns:
+  // - navigateToNewClient (apenas admin)
+  // - deleteClient (apenas admin)
+  // - addClient (apenas admin)
+} 

@@ -7,12 +7,12 @@ import 'package:mask_text_input_formatter/mask_text_input_formatter.dart';
 import '../../core/constants/route_constant.dart';
 import '../../core/models/client_model.dart';
 import '../../core/data/clients_mock_data.dart';
-import 'clients_controller.dart';
+import 'user_clients_controller.dart';
 
-class ClientFormController extends GetxController with StateMixin<ClientModel>, GetSingleTickerProviderStateMixin {
+class UserClientFormController extends GetxController with StateMixin<ClientModel>, GetSingleTickerProviderStateMixin {
   final String? clientId;
   
-  ClientFormController({this.clientId});
+  UserClientFormController({this.clientId});
 
   late TabController tabController;
 
@@ -44,22 +44,19 @@ class ClientFormController extends GetxController with StateMixin<ClientModel>, 
   final conectaPlus = false.obs;
   final tags = <String>[].obs;
   
-  final isEditing = false.obs;
   final isLoading = false.obs;
-  final pageTitle = 'Novo Cliente'.obs;
+  final pageTitle = 'Editar Cliente'.obs; // Sempre edição para usuários
 
   @override
   void onInit() {
     super.onInit();
     
     tabController = TabController(length: 3, vsync: this);
-    isEditing.value = clientId != null;
-    pageTitle.value = isEditing.value ? 'Editar Cliente' : 'Novo Cliente';
     
-    if (isEditing.value && clientId != null) {
+    if (clientId != null) {
       _loadClientData();
     } else {
-      change(null, status: RxStatus.empty());
+      change(null, status: RxStatus.error('ID do cliente não fornecido'));
     }
   }
 
@@ -83,19 +80,15 @@ class ClientFormController extends GetxController with StateMixin<ClientModel>, 
     change(null, status: RxStatus.loading());
     
     Future.delayed(const Duration(milliseconds: 500), () {
-      final mockClient = _getMockClient(clientId!);
+      final client = ClientsMockData.getClientById(clientId!);
       
-      if (mockClient != null) {
-        _fillFormWithClientData(mockClient);
-        change(mockClient, status: RxStatus.success());
+      if (client != null) {
+        _fillFormWithClientData(client);
+        change(client, status: RxStatus.success());
       } else {
         change(null, status: RxStatus.error('Cliente não encontrado'));
       }
     });
-  }
-
-  ClientModel? _getMockClient(String id) {
-    return ClientsMockData.getClientById(id);
   }
 
   void _fillFormWithClientData(ClientModel client) {
@@ -116,6 +109,7 @@ class ClientFormController extends GetxController with StateMixin<ClientModel>, 
     update();
   }
 
+  // Validações (iguais ao controller de admin)
   String? validateNomeFachada(String? value) {
     return Validatorless.multiple([
       Validatorless.required('Nome na fachada é obrigatório'),
@@ -232,10 +226,8 @@ class ClientFormController extends GetxController with StateMixin<ClientModel>, 
     try {
       await Future.delayed(const Duration(milliseconds: 1000));
       
-      final clientId = this.clientId ?? '${DateTime.now().millisecondsSinceEpoch}_${nomeNaFachadaController.text.hashCode.abs()}';
-      
       final clientData = ClientModel(
-        id: clientId,
+        id: clientId!,
         razaoSocial: razaoSocialController.text.trim(),
         nomeNaFachada: nomeNaFachadaController.text.trim(),
         cnpj: cnpjController.text.trim(),
@@ -253,38 +245,27 @@ class ClientFormController extends GetxController with StateMixin<ClientModel>, 
         updatedAt: DateTime.now(),
       );
 
-      if (Get.isRegistered<ClientsController>()) {
-        final clientsController = Get.find<ClientsController>();
-        
-        if (isEditing.value) {
-          clientsController.updateClient(clientData);
-        } else {
-          clientsController.addClient(clientData);
-        }
+      // Atualiza no mock global
+      ClientsMockData.updateClient(clientData);
+
+      // Atualiza no controller de usuários se estiver registrado
+      if (Get.isRegistered<UserClientsController>()) {
+        final userClientsController = Get.find<UserClientsController>();
+        userClientsController.updateClient(clientData);
       }
 
       if (context.mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(
-              isEditing.value 
-                ? 'Cliente atualizado com sucesso!' 
-                : 'Cliente adicionado com sucesso!',
-            ),
-            backgroundColor: const Color(0xFF4CAF50),
-            duration: const Duration(seconds: 2),
+          const SnackBar(
+            content: Text('Cliente atualizado com sucesso!'),
+            backgroundColor: Color(0xFF4CAF50),
+            duration: Duration(seconds: 2),
           ),
         );
 
-        if (!isEditing.value) {
-          nomeNaFachadaController.clear();
-          cnpjController.clear();
-          razaoSocialController.clear();
-        }
-
         await Future.delayed(const Duration(milliseconds: 500));
         
-        GoRouter.of(context).go(AppRoutes.admin);
+        GoRouter.of(context).go(AppRoutes.user);
       }
       
     } catch (e) {
@@ -302,23 +283,7 @@ class ClientFormController extends GetxController with StateMixin<ClientModel>, 
   }
 
   void cancel(BuildContext context) {
-    GoRouter.of(context).go(AppRoutes.admin);
-  }
-
-  void clearForm() {
-    nomeNaFachadaController.clear();
-    cnpjController.clear();
-    razaoSocialController.clear();
-    cepController.clear();
-    ruaController.clear();
-    numeroController.clear();
-    bairroController.clear();
-    cidadeController.clear();
-    estadoController.clear();
-    complementoController.clear();
-    selectedStatus.value = 'Ativo';
-    conectaPlus.value = false;
-    tags.clear();
+    GoRouter.of(context).go(AppRoutes.user);
   }
 
   void addTag(String tag) {

@@ -12,6 +12,8 @@ import '../../modules/auth/register/register_page.dart';
 import '../../modules/users/user_page.dart';
 import '../../modules/users/user_bindings.dart';
 import '../../modules/users/user_controller.dart';
+import '../../modules/users/user_client_form_controller.dart';
+import '../../modules/users/user_client_form_page.dart';
 import '../constants/route_constant.dart';
 import '../network/storage_client.dart';
 import '../../modules/clients/client_form_controller.dart';
@@ -58,6 +60,25 @@ final GoRouter router = GoRouter(
         
         return const UserPage();
       },
+      routes: [
+        GoRoute(
+          path: 'clients/edit/:id',
+          builder: (context, state) {
+            final clientId = state.pathParameters['id'];
+            
+            if (Get.isRegistered<UserClientFormController>()) {
+              Get.delete<UserClientFormController>(force: true);
+            }
+            
+            Get.put<UserClientFormController>(
+              UserClientFormController(clientId: clientId),
+              permanent: false,
+            );
+            
+            return const UserClientFormPage();
+          },
+        ),
+      ],
     ),
     GoRoute(
       path: AppRoutes.admin,

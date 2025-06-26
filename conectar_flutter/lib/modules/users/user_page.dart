@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
 import 'user_controller.dart';
+import 'user_clients_controller.dart';
+import 'user_clients_page.dart';
 import 'widgets/user_profile_widget.dart';
 
 class UserPage extends GetView<UserController> {
@@ -33,6 +35,21 @@ class UserPage extends GetView<UserController> {
           ],
         ),
         actions: [
+          IconButton(
+            onPressed: () => Navigator.of(context).push(
+              MaterialPageRoute(
+                builder: (context) {
+                  if (Get.isRegistered<UserClientsController>()) {
+                    Get.delete<UserClientsController>(force: true);
+                  }
+                  Get.put<UserClientsController>(UserClientsController(), permanent: true);
+                  return const UserClientsPage();
+                },
+              ),
+            ),
+            icon: const Icon(Icons.people),
+            tooltip: 'Ver Clientes',
+          ),
           IconButton(
             onPressed: () => controller.logout(context),
             icon: const Icon(Icons.logout),
