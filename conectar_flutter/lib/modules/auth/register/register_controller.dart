@@ -5,8 +5,10 @@ import 'package:validatorless/validatorless.dart';
 
 import '../../../core/constants/route_constant.dart';
 import '../../../core/models/register/register_request_model.dart';
+import '../../../core/models/register/register_response_model.dart';
 import '../../../core/models/user_model.dart';
 import '../../../core/repositories/register/register_repository.dart';
+import '../login/login_controller.dart';
 
 class RegisterController extends GetxController with StateMixin<UserModel> {
   final RegisterRepository _registerRepository;
@@ -18,6 +20,12 @@ class RegisterController extends GetxController with StateMixin<UserModel> {
   final passwordController = TextEditingController();
   final confirmPasswordController = TextEditingController();
   final formKey = GlobalKey<FormState>();
+
+  @override
+  void onInit() {
+    super.onInit();
+    change(null, status: RxStatus.empty());
+  }
 
   @override
   void onClose() {
@@ -77,6 +85,19 @@ class RegisterController extends GetxController with StateMixin<UserModel> {
       }
     } catch (e) {
       change(null, status: RxStatus.error('Erro de conexão. Tente novamente.'));
+    }
+  }
+
+  void navigateToLoginWithData(BuildContext context) {
+    if (status.isSuccess) {
+      // Preenche os dados no LoginController se estiver registrado
+      if (Get.isRegistered<LoginController>()) {
+        final loginController = Get.find<LoginController>();
+        loginController.emailController.text = emailController.text;
+        loginController.passwordController.text = passwordController.text;
+      }
+      
+      GoRouter.of(context).go(AppRoutes.login);
     }
   }
 

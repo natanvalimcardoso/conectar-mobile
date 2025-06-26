@@ -16,8 +16,9 @@ final GoRouter router = GoRouter(
   redirect: (context, state) async {
     final hasToken = await StorageClient.hasToken();
     final isLoginPage = state.matchedLocation == AppRoutes.login;
-    
-    if (!hasToken && !isLoginPage) {
+    final isRegisterPage = state.matchedLocation == AppRoutes.register;
+
+    if (!hasToken && !isLoginPage && !isRegisterPage) {
       return AppRoutes.login;
     }
 
