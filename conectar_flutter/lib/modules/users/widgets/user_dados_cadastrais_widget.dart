@@ -3,7 +3,7 @@ import 'package:get/get.dart';
 
 import '../../../core/widgets/inputs/custom_input_widget.dart';
 import '../user_client_form_controller.dart';
-import '../../clients/widgets/status_dropdown_widget.dart';
+
 import 'user_conecta_plus_checkbox_widget.dart';
 import 'user_tags_section_widget.dart';
 
