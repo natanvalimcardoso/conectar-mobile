@@ -89,7 +89,6 @@ class RegisterController extends GetxController with StateMixin<UserModel> {
 
   void navigateToLoginWithData(BuildContext context) {
     if (status.isSuccess) {
-      // Preenche os dados no LoginController se estiver registrado
       if (Get.isRegistered<LoginController>()) {
         final loginController = Get.find<LoginController>();
         loginController.emailController.text = emailController.text;

@@ -1,4 +1,3 @@
-// ignore_for_file: public_member_api_docs, sort_constructors_first
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:go_router/go_router.dart';
@@ -33,14 +32,12 @@ class LoginController extends GetxController with StateMixin<UserModel> {
     super.onClose();
   }
 
-  /// Limpa os dados do formulário e reseta o estado
   void clearForm() {
     emailController.clear();
     passwordController.clear();
     formKey.currentState?.reset();
     change(null, status: RxStatus.empty());
   }
-
 
   String? validateEmail(String? email) {
     return Validatorless.multiple([

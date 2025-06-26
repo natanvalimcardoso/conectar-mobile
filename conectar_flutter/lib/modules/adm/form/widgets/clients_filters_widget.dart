@@ -63,30 +63,30 @@ class FiltersContentWidget extends GetView<ClientsController> {
           // Layout para telas largas - uma linha
           Row(
             children: [
-              Expanded(child: _buildNameField()),
+              Expanded(child: FilterNameFieldWidget()),
               const SizedBox(width: 16),
-              Expanded(child: _buildCnpjField()),
+              Expanded(child: FilterCnpjFieldWidget()),
               const SizedBox(width: 16),
-              Expanded(child: _buildStatusDropdown()),
+              Expanded(child: FilterStatusDropdownWidget()),
               const SizedBox(width: 16),
-              Expanded(child: _buildConectaPlusDropdown()),
+              Expanded(child: FilterConectaPlusDropdownWidget()),
             ],
           ),
         ] else ...[
           // Layout para telas pequenas - duas linhas
           Row(
             children: [
-              Expanded(child: _buildNameField()),
+              Expanded(child: FilterNameFieldWidget()),
               const SizedBox(width: 16),
-              Expanded(child: _buildCnpjField()),
+              Expanded(child: FilterCnpjFieldWidget()),
             ],
           ),
           const SizedBox(height: 16),
           Row(
             children: [
-              Expanded(child: _buildStatusDropdown()),
+              Expanded(child: FilterStatusDropdownWidget()),
               const SizedBox(width: 16),
-              Expanded(child: _buildConectaPlusDropdown()),
+              Expanded(child: FilterConectaPlusDropdownWidget()),
             ],
           ),
         ],
@@ -95,8 +95,13 @@ class FiltersContentWidget extends GetView<ClientsController> {
       ],
     );
   }
+}
 
-  Widget _buildNameField() {
+class FilterNameFieldWidget extends GetView<ClientsController> {
+  const FilterNameFieldWidget({super.key});
+
+  @override
+  Widget build(BuildContext context) {
     return TextField(
       controller: controller.nomeController,
       decoration: const InputDecoration(
@@ -107,8 +112,13 @@ class FiltersContentWidget extends GetView<ClientsController> {
       ),
     );
   }
+}
 
-  Widget _buildCnpjField() {
+class FilterCnpjFieldWidget extends GetView<ClientsController> {
+  const FilterCnpjFieldWidget({super.key});
+
+  @override
+  Widget build(BuildContext context) {
     return TextField(
       controller: controller.cnpjController,
       decoration: const InputDecoration(
@@ -119,8 +129,13 @@ class FiltersContentWidget extends GetView<ClientsController> {
       ),
     );
   }
+}
 
-  Widget _buildStatusDropdown() {
+class FilterStatusDropdownWidget extends GetView<ClientsController> {
+  const FilterStatusDropdownWidget({super.key});
+
+  @override
+  Widget build(BuildContext context) {
     return Obx(() => DropdownButtonFormField<String>(
           value: controller.selectedStatus.value,
           decoration: const InputDecoration(
@@ -139,8 +154,13 @@ class FiltersContentWidget extends GetView<ClientsController> {
           },
         ));
   }
+}
 
-  Widget _buildConectaPlusDropdown() {
+class FilterConectaPlusDropdownWidget extends GetView<ClientsController> {
+  const FilterConectaPlusDropdownWidget({super.key});
+
+  @override
+  Widget build(BuildContext context) {
     return Obx(() => DropdownButtonFormField<String>(
           value: controller.selectedConectaPlus.value,
           decoration: const InputDecoration(

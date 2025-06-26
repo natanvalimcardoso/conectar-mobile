@@ -76,7 +76,6 @@ class LoginPage extends GetView<LoginController> {
                         
                         controller.obx(
                           (state) {
-                            // Quando o login for bem-sucedido, navega para a próxima tela
                             WidgetsBinding.instance.addPostFrameCallback((_) {
                               controller.navigateToHome(context);
                             });

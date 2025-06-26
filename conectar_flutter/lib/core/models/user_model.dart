@@ -19,8 +19,6 @@ class UserModel {
 
   factory UserModel.fromJson(Map<String, dynamic> json) {
     try {
-      print('🔍 [UserModel] Parsing JSON: $json');
-      
       final user = UserModel(
         id: json['id'] ?? '',
         name: json['name'] ?? '',
@@ -31,11 +29,8 @@ class UserModel {
         updatedAt: json['updatedAt'] != null ? DateTime.parse(json['updatedAt']) : DateTime.now(),
       );
       
-      print('✅ [UserModel] Parsing bem-sucedido: ${user.name}');
       return user;
     } catch (e) {
-      print('❌ [UserModel] Erro no parsing: $e');
-      print('📋 [UserModel] JSON recebido: $json');
       rethrow;
     }
   }

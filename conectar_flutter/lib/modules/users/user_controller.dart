@@ -76,15 +76,12 @@ class UserController extends GetxController with StateMixin<UserModel> {
       // Debug: verifica se tem token antes de fazer a chamada
       final hasToken = await StorageClient.hasToken();
       final token = await StorageClient.getToken();
-      print('🔍 [UserController] Tem token: $hasToken');
-      print('🔍 [UserController] Token: ${token?.substring(0, 20)}...');
       
       final user = await _userRepository.getUserProfile();
       nameController.text = user.name;
       change(user, status: RxStatus.success());
     } catch (e) {
       final errorMessage = e.toString();
-      print('❌ [UserController] Erro: $errorMessage');
       
       // Verifica se é erro de autenticação
       if (errorMessage.contains('Token inválido') || 
@@ -137,18 +134,14 @@ class UserController extends GetxController with StateMixin<UserModel> {
     isLoadingProfile.value = true;
     
     try {
-      print('🔄 [UserController] Iniciando atualização do nome...');
       final updatedUser = await _userRepository.updateUserProfile(
         userId: state!.id,
         name: nameController.text.trim(),
       );
       
-      print('✅ [UserController] Usuário atualizado com sucesso: ${updatedUser.name}');
       change(updatedUser, status: RxStatus.success());
       isEditingName.value = false;
       update(['editingName']);
-      
-      print('📝 [UserController] Estado de edição resetado');
       
       if (context.mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
@@ -159,7 +152,6 @@ class UserController extends GetxController with StateMixin<UserModel> {
         );
       }
     } catch (e) {
-      print('❌ [UserController] Erro ao atualizar nome: $e');
       if (context.mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(

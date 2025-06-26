@@ -201,43 +201,26 @@ class ClientsController extends GetxController with StateMixin<List<ClientModel>
   }
 
   void addClient(ClientModel newClient) {
-    print('📝 Tentando adicionar cliente: ${newClient.nomeNaFachada}');
-    print('🏷️ Tags do cliente recebido: ${newClient.tags}');
-    
-    // O Set automaticamente previne duplicações baseadas no equals/hashCode (CNPJ)
     final wasAdded = _allClients.add(newClient);
     
     if (!wasAdded) {
-      print('⚠️ Cliente com CNPJ ${newClient.cnpj} já existe no Set. Duplicação automaticamente prevenida.');
       return;
     }
     
-    // Atualiza tanto a lista filtrada quanto o estado principal
     filteredClients.value = _allClients.toList();
     
-    // Força atualização do estado
     change(_allClients.toList(), status: RxStatus.success());
-    
-    print('📊 Total de clientes agora: ${_allClients.length}');
-    print('✅ Cliente adicionado com sucesso: ${newClient.nomeNaFachada} com tags: ${newClient.tags}');
   }
 
   void updateClient(ClientModel updatedClient) {
-    print('✏️ Atualizando cliente: ${updatedClient.nomeNaFachada}');
-    
-    // Remove o cliente antigo (se existir) e adiciona o atualizado
     _allClients.removeWhere((client) => client.id == updatedClient.id);
     _allClients.add(updatedClient);
     
-    // Atualiza na lista filtrada também
     final filteredIndex = filteredClients.indexWhere((client) => client.id == updatedClient.id);
     if (filteredIndex != -1) {
       filteredClients[filteredIndex] = updatedClient;
     }
     
-    // Força atualização do estado
     change(_allClients.toList(), status: RxStatus.success());
-    
-    print('✅ Cliente atualizado com sucesso');
   }
 }

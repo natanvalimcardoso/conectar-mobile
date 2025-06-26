@@ -51,11 +51,9 @@ class DioClient {
           if (error.response?.statusCode == 200 && 
               error.response?.data['success'] == false &&
               error.response?.data['message'] == 'Acesso negado') {
-            print('🚫 Acesso negado - Token inválido ou expirado');
           }
           
           if (kIsWeb && error.type == DioExceptionType.connectionError) {
-            print('🔄 Tentando reconectar em caso de erro de CORS...');
           }
           
           return handler.next(error);
@@ -91,7 +89,6 @@ class DioClient {
         break;
     }
     if (!kReleaseMode) {
-      print('DioClient Error: $errorMessage');
     }
   }
 

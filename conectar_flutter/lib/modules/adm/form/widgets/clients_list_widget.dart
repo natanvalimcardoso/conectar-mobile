@@ -192,10 +192,19 @@ class ClientsDataTableWidget extends GetView<ClientsController> {
                       fontSize: 14,
                       color: Color(0xFF2E7D32),
                     ),
-                    columns: _buildColumns(isWideScreen, isMediumScreen),
+                    columns: DataTableColumnsWidget(
+                      isWideScreen: isWideScreen,
+                      isMediumScreen: isMediumScreen,
+                    ).build(),
                     rows: clients.map((client) {
                       return DataRow(
-                        cells: _buildCells(client, context, isWideScreen, isMediumScreen),
+                        cells: DataTableCellsWidget(
+                          client: client,
+                          context: context,
+                          isWideScreen: isWideScreen,
+                          isMediumScreen: isMediumScreen,
+                          controller: controller,
+                        ).build(),
                       );
                     }).toList(),
                   ),
@@ -242,8 +251,18 @@ class ClientsDataTableWidget extends GetView<ClientsController> {
       ),
     );
   }
+}
 
-  List<DataColumn> _buildColumns(bool isWideScreen, bool isMediumScreen) {
+class DataTableColumnsWidget {
+  final bool isWideScreen;
+  final bool isMediumScreen;
+
+  const DataTableColumnsWidget({
+    required this.isWideScreen,
+    required this.isMediumScreen,
+  });
+
+  List<DataColumn> build() {
     final baseColumns = [
       const DataColumn(label: Text('Razão social')),
       const DataColumn(label: Text('CNPJ')),
@@ -271,8 +290,24 @@ class ClientsDataTableWidget extends GetView<ClientsController> {
       ];
     }
   }
+}
 
-  List<DataCell> _buildCells(dynamic client, BuildContext context, bool isWideScreen, bool isMediumScreen) {
+class DataTableCellsWidget {
+  final dynamic client;
+  final BuildContext context;
+  final bool isWideScreen;
+  final bool isMediumScreen;
+  final ClientsController controller;
+
+  const DataTableCellsWidget({
+    required this.client,
+    required this.context,
+    required this.isWideScreen,
+    required this.isMediumScreen,
+    required this.controller,
+  });
+
+  List<DataCell> build() {
     final baseCells = [
       DataCell(
         InkWell(

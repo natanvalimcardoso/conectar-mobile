@@ -30,7 +30,7 @@ class FormDadosCadastraisWidget extends GetView<AdmFormController> {
               const FormTagsHeaderSection(),
               const SizedBox(height: 16),
               const FormTagsSectionWidget(),
-              const SizedBox(height: 80), // Espaço extra para evitar sobreposição com botões
+              const SizedBox(height: 80),
             ],
           ),
         ),

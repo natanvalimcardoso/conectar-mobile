@@ -212,7 +212,6 @@ class AdmFormController extends GetxController with GetSingleTickerProviderState
 
     // Proteção tripla contra duplo clique
     if (isLoading.value || isSaving.value) {
-      print('⚠️ Salvamento já em andamento, ignorando... (isLoading: ${isLoading.value}, isSaving: ${isSaving.value})');
       return;
     }
 
@@ -221,9 +220,6 @@ class AdmFormController extends GetxController with GetSingleTickerProviderState
     isSaving.value = true;
     
     try {
-      print('🏷️ Tags no formulário: ${tags.toList()}');
-      
-      // Simula uma chamada de API
       await Future.delayed(const Duration(milliseconds: 1000));
       
       // Gera um ID único mais robusto
@@ -248,24 +244,15 @@ class AdmFormController extends GetxController with GetSingleTickerProviderState
         updatedAt: DateTime.now(),
       );
 
-      print('🏷️ Tags no cliente criado: ${clientData.tags}');
-
       // Adiciona o cliente à lista no ClientsController
       if (Get.isRegistered<ClientsController>()) {
         final clientsController = Get.find<ClientsController>();
-        print('🔍 ClientsController encontrado: ${clientsController.runtimeType}');
         
         if (isEditing.value) {
-          print('✏️ Atualizando cliente existente: ${clientData.nomeNaFachada}');
           clientsController.updateClient(clientData);
         } else {
-          print('➕ Adicionando novo cliente: ${clientData.nomeNaFachada}');
           clientsController.addClient(clientData);
         }
-        
-        print('📋 Cliente processado com sucesso');
-      } else {
-        print('❌ ClientsController não encontrado!');
       }
 
       // Mostra mensagem de sucesso
@@ -290,13 +277,11 @@ class AdmFormController extends GetxController with GetSingleTickerProviderState
           final mainTabController = Get.find<TabController>(tag: 'mainTab');
           mainTabController.animateTo(0); // Aba de clientes
         } catch (e) {
-          print('Erro ao trocar para aba de clientes: $e');
         }
       }
       
     } catch (e) {
       // Log do erro e mostra mensagem de erro
-      print('Erro ao salvar cliente: $e');
       if (context.mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(

@@ -8,7 +8,6 @@ import 'user_controller.dart';
 class UserBindings extends Bindings {
   @override
   void dependencies() {
-    // Usa o DioClient global que já tem o interceptor de token configurado
     Get.lazyPut<UserRepository>(
       () => UserRepositoryImpl(Get.find<DioClient>()),
     );

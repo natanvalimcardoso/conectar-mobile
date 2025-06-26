@@ -14,12 +14,10 @@ class UserRepositoryImpl implements UserRepository {
     try {
       final response = await _dioClient.get('auth/me');
       
-      // Verifica se a resposta indica sucesso
       if (response.statusCode == 200 && response.data['success'] == true && response.data['data'] != null) {
         return UserModel.fromJson(response.data['data']);
       }
       
-      // Trata caso específico de "Acesso negado" com status 200
       if (response.statusCode == 200 && response.data['success'] == false) {
         final message = response.data['message'];
         if (message == 'Acesso negado') {
@@ -67,14 +65,9 @@ class UserRepositoryImpl implements UserRepository {
         data: data,
       );
       
-      print('📊 [UserRepository] Response status: ${response.statusCode}');
-      print('📊 [UserRepository] Response data: ${response.data}');
-      
       if (response.statusCode == 200 && response.data['success'] == true && response.data['data'] != null) {
-        print('✅ [UserRepository] Criando UserModel com dados: ${response.data['data']}');
         return UserModel.fromJson(response.data['data']);
       } else {
-        print('❌ [UserRepository] Erro na resposta: ${response.data['message']}');
         throw Exception(response.data['message'] ?? 'Erro ao atualizar perfil');
       }
     } on DioException catch (e) {

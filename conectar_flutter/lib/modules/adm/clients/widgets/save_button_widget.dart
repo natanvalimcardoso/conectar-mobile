@@ -12,7 +12,6 @@ class SaveButtonWidget extends GetView<ClientFormController> {
       onPressed: controller.isLoading.value
           ? null
           : () {
-              // Proteção adicional contra duplo clique
               if (!controller.isLoading.value) {
                 controller.saveClient(context);
               }

@@ -13,18 +13,14 @@ class ClientFormController extends GetxController with StateMixin<ClientModel>, 
   
   ClientFormController({this.clientId});
 
-  // TabController
   late TabController tabController;
 
-  // Form keys
   final dadosCadastraisFormKey = GlobalKey<FormState>();
   
-  // Controllers dos dados cadastrais
   final nomeNaFachadaController = TextEditingController();
   final cnpjController = TextEditingController();
   final razaoSocialController = TextEditingController();
   
-  // Controllers do endereço
   final cepController = TextEditingController();
   final ruaController = TextEditingController();
   final numeroController = TextEditingController();
@@ -33,7 +29,6 @@ class ClientFormController extends GetxController with StateMixin<ClientModel>, 
   final estadoController = TextEditingController();
   final complementoController = TextEditingController();
   
-  // Formatadores
   final cnpjFormatter = MaskTextInputFormatter(
     mask: '##.###.###/####-##',
     filter: {'#': RegExp(r'[0-9]')},
@@ -44,7 +39,6 @@ class ClientFormController extends GetxController with StateMixin<ClientModel>, 
     filter: {'#': RegExp(r'[0-9]')},
   );
   
-  // Status e outros campos
   final selectedStatus = 'Ativo'.obs;
   final conectaPlus = false.obs;
   final tags = <String>[].obs;
@@ -56,20 +50,14 @@ class ClientFormController extends GetxController with StateMixin<ClientModel>, 
   @override
   void onInit() {
     super.onInit();
-    print('🚀 [ClientFormController] Inicializando controller com clientId: $clientId');
     
     tabController = TabController(length: 3, vsync: this);
     isEditing.value = clientId != null;
     pageTitle.value = isEditing.value ? 'Editar Cliente' : 'Novo Cliente';
     
-    print('✏️ [ClientFormController] Modo de edição: ${isEditing.value}');
-    print('📄 [ClientFormController] Título da página: ${pageTitle.value}');
-    
     if (isEditing.value && clientId != null) {
-      print('🔄 [ClientFormController] Carregando dados do cliente...');
       _loadClientData();
     } else {
-      print('📝 [ClientFormController] Modo de criação - formulário vazio');
       change(null, status: RxStatus.empty());
     }
   }
@@ -91,22 +79,15 @@ class ClientFormController extends GetxController with StateMixin<ClientModel>, 
   }
 
   void _loadClientData() {
-    print('🔍 [ClientFormController] Carregando dados para clientId: $clientId');
     change(null, status: RxStatus.loading());
     
-    // Simula uma chamada de API para carregar dados do cliente
     Future.delayed(const Duration(milliseconds: 500), () {
-      // Mock de dados baseado no ID
       final mockClient = _getMockClient(clientId!);
-      
-      print('📋 [ClientFormController] Cliente encontrado: ${mockClient?.nomeNaFachada}');
       
       if (mockClient != null) {
         _fillFormWithClientData(mockClient);
         change(mockClient, status: RxStatus.success());
-        print('✅ [ClientFormController] Dados carregados com sucesso');
       } else {
-        print('❌ [ClientFormController] Cliente não encontrado para ID: $clientId');
         change(null, status: RxStatus.error('Cliente não encontrado'));
       }
     });
@@ -205,8 +186,6 @@ class ClientFormController extends GetxController with StateMixin<ClientModel>, 
   }
 
   void _fillFormWithClientData(ClientModel client) {
-    print('📝 [ClientFormController] Preenchendo formulário com dados do cliente: ${client.nomeNaFachada}');
-    
     nomeNaFachadaController.text = client.nomeNaFachada;
     cnpjController.text = client.cnpj;
     razaoSocialController.text = client.razaoSocial;
@@ -219,21 +198,11 @@ class ClientFormController extends GetxController with StateMixin<ClientModel>, 
     complementoController.text = client.complemento ?? '';
     selectedStatus.value = client.status;
     conectaPlus.value = client.conectaPlus;
-    tags.value = List<String>.from(client.tags); // Cria uma nova lista
+    tags.value = List<String>.from(client.tags);
     
-    print('📝 [ClientFormController] Campos preenchidos:');
-    print('   Nome na fachada: ${nomeNaFachadaController.text}');
-    print('   CNPJ: ${cnpjController.text}');
-    print('   Razão Social: ${razaoSocialController.text}');
-    print('   Status: ${selectedStatus.value}');
-    print('   Conecta Plus: ${conectaPlus.value}');
-    print('   Tags: ${tags.value}');
-    
-    // Força uma atualização da interface
     update();
   }
 
-  // Validações usando apenas validatorless
   String? validateNomeFachada(String? value) {
     return Validatorless.multiple([
       Validatorless.required('Nome na fachada é obrigatório'),
@@ -316,9 +285,8 @@ class ClientFormController extends GetxController with StateMixin<ClientModel>, 
   }
 
   String? validateComplemento(String? value) {
-    // Complemento não é obrigatório, remove a validação required
     if (value == null || value.trim().isEmpty) {
-      return null; // Campo opcional
+      return null;
     }
     return Validatorless.multiple([
       Validatorless.min(2, 'Complemento deve ter pelo menos 2 caracteres'),
@@ -327,7 +295,6 @@ class ClientFormController extends GetxController with StateMixin<ClientModel>, 
   }
 
   String? validateTag(String? value) {
-    // Tags não são obrigatórias, apenas validamos se foram informadas
     if (value == null || value.trim().isEmpty) {
       return 'Tag não pode estar vazia';
     }
@@ -343,21 +310,15 @@ class ClientFormController extends GetxController with StateMixin<ClientModel>, 
       return;
     }
 
-    // Proteção contra duplo clique
     if (isLoading.value) {
-      print('⚠️ [ClientForm] Salvamento já em andamento, ignorando...');
       return;
     }
 
     isLoading.value = true;
     
     try {
-      print('🏷️ [ClientForm] Tags no formulário: ${tags.toList()}');
-      
-      // Simula uma chamada de API
       await Future.delayed(const Duration(milliseconds: 1000));
       
-      // Gera um ID único mais robusto
       final clientId = this.clientId ?? '${DateTime.now().millisecondsSinceEpoch}_${nomeNaFachadaController.text.hashCode.abs()}';
       
       final clientData = ClientModel(
@@ -374,32 +335,21 @@ class ClientFormController extends GetxController with StateMixin<ClientModel>, 
         estado: estadoController.text.trim(),
         complemento: complementoController.text.trim(),
         conectaPlus: conectaPlus.value,
-        tags: tags.toList(), // Garante que é uma nova lista
+        tags: tags.toList(),
         createdAt: state?.createdAt ?? DateTime.now(),
         updatedAt: DateTime.now(),
       );
 
-      print('🏷️ [ClientForm] Tags no cliente criado: ${clientData.tags}');
-
-      // Adiciona o cliente à lista no ClientsController
       if (Get.isRegistered<ClientsController>()) {
         final clientsController = Get.find<ClientsController>();
-        print('🔍 [ClientForm] ClientsController encontrado: ${clientsController.runtimeType}');
         
         if (isEditing.value) {
-          print('✏️ [ClientForm] Atualizando cliente existente: ${clientData.nomeNaFachada}');
           clientsController.updateClient(clientData);
         } else {
-          print('➕ [ClientForm] Adicionando novo cliente: ${clientData.nomeNaFachada}');
           clientsController.addClient(clientData);
         }
-        
-        print('📋 [ClientForm] Cliente processado com sucesso');
-      } else {
-        print('❌ [ClientForm] ClientsController não encontrado!');
       }
 
-      // Mostra mensagem de sucesso
       if (context.mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
@@ -413,26 +363,18 @@ class ClientFormController extends GetxController with StateMixin<ClientModel>, 
           ),
         );
 
-        // Para novos clientes, limpa apenas os campos principais mantendo endereço
         if (!isEditing.value) {
           nomeNaFachadaController.clear();
           cnpjController.clear();
           razaoSocialController.clear();
-          // Mantém endereço para facilitar cadastro de clientes na mesma região
         }
 
-        // Aguarda um pouco antes de navegar para mostrar o SnackBar
         await Future.delayed(const Duration(milliseconds: 500));
         
-        // Navega de volta para admin
         GoRouter.of(context).go(AppRoutes.admin);
-        
-        print('✅ [ClientForm] Navegação concluída com sucesso');
       }
       
     } catch (e) {
-      // Log do erro e mostra mensagem de erro
-      print('Erro ao salvar cliente: $e');
       if (context.mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
@@ -466,7 +408,6 @@ class ClientFormController extends GetxController with StateMixin<ClientModel>, 
     tags.clear();
   }
 
-  // Métodos para gerenciar tags
   void addTag(String tag) {
     final trimmedTag = tag.trim();
     if (trimmedTag.isNotEmpty && !tags.contains(trimmedTag)) {
@@ -481,5 +422,4 @@ class ClientFormController extends GetxController with StateMixin<ClientModel>, 
   bool hasTag(String tag) {
     return tags.contains(tag);
   }
-
 } 

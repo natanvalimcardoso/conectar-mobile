@@ -132,7 +132,6 @@ class FormSaveButtonWidget extends GetView<AdmFormController> {
         onPressed: isDisabled
             ? null
             : () {
-                // Proteção adicional contra duplo clique
                 if (!controller.isLoading.value && !controller.isSaving.value) {
                   controller.saveClient(context);
                 }

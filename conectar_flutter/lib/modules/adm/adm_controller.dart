@@ -43,17 +43,12 @@ class AdmController extends GetxController with GetSingleTickerProviderStateMixi
     }
     // Remove ClientFormController que pode estar conflitando
     if (Get.isRegistered<ClientFormController>()) {
-      print('🗑️ Removendo ClientFormController conflitante da aba');
       Get.delete<ClientFormController>(force: true);
     }
     
     // Cria novas instâncias permanentes de forma síncrona
     clientsController = Get.put(ClientsController(), permanent: true);
     formController = Get.put(AdmFormController(), permanent: true);
-    
-    print('🎯 ClientsController criado: ${Get.isRegistered<ClientsController>()}');
-    print('🎯 AdmFormController criado: ${Get.isRegistered<AdmFormController>()}');
-    print('🚫 ClientFormController removido: ${!Get.isRegistered<ClientFormController>()}');
   }
 
   void _setupTabController() {
@@ -77,20 +72,12 @@ class AdmController extends GetxController with GetSingleTickerProviderStateMixi
 
   void _disposeControllers() {
     // NÃO remove controllers permanentes, apenas remove registros de funções
-    print('🧹 Limpando registros de funções...');
-    
-    // Remove registros de funções
     try {
       Get.delete<Function(ClientModel)>(tag: 'editClient');
       Get.delete<VoidCallback>(tag: 'newClient');
       Get.delete<TabController>(tag: 'mainTab');
-      print('✅ Registros de funções removidos');
     } catch (e) {
-      print('⚠️ Erro ao remover registros: $e');
     }
-    
-    // Mantém controllers permanentes ativos para outras páginas
-    print('📌 Controllers permanentes mantidos');
   }
 
   // Métodos de navegação entre abas
