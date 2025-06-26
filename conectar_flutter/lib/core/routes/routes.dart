@@ -1,6 +1,8 @@
 import 'package:go_router/go_router.dart';
 
 import '../../modules/adm/adm_page.dart';
+import '../../modules/adm/clients/client_form_page.dart';
+import '../../modules/adm/clients/client_form_bindings.dart';
 import '../../modules/auth/login/login_bindings.dart';
 import '../../modules/auth/login/login_page.dart';
 import '../../modules/auth/register/register_bindings.dart';
@@ -51,6 +53,22 @@ final GoRouter router = GoRouter(
       builder: (context, state) {
         return const AdmPage();
       },
+      routes: [
+        GoRoute(
+          path: 'clients/new',
+          builder: (context, state) {
+            ClientFormBindings().dependencies();
+            return const ClientFormPage();
+          },
+        ),
+        GoRoute(
+          path: 'clients/edit/:id',
+          builder: (context, state) {
+            ClientFormBindings().dependencies();
+            return const ClientFormPage();
+          },
+        ),
+      ],
     ),
   ],
 );
