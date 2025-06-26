@@ -1,4 +1,5 @@
 import 'package:get/get.dart';
+import 'package:go_router/go_router.dart';
 
 import 'client_form_controller.dart';
 
@@ -13,12 +14,12 @@ class ClientFormBindings extends Bindings {
       Get.delete<ClientFormController>(force: true);
     }
     
-    // Cria um novo controller de forma síncrona
-    final clientId = Get.parameters['id'];
-    print('🆕 [ClientFormBindings] Criando ClientFormController com ID: $clientId');
+    // Pega o clientId do GoRouter context
+    // Como não temos acesso direto ao context aqui, vamos modificar a abordagem
+    print('🆔 [ClientFormBindings] Tentando obter clientId...');
     
     Get.put<ClientFormController>(
-      ClientFormController(clientId: clientId),
+      ClientFormController(clientId: null), // Será definido posteriormente
       permanent: false, // NÃO permanente para evitar conflitos
     );
     

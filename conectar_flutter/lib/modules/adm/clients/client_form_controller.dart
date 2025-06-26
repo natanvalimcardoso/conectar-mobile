@@ -56,13 +56,20 @@ class ClientFormController extends GetxController with StateMixin<ClientModel>, 
   @override
   void onInit() {
     super.onInit();
+    print('🚀 [ClientFormController] Inicializando controller com clientId: $clientId');
+    
     tabController = TabController(length: 3, vsync: this);
     isEditing.value = clientId != null;
     pageTitle.value = isEditing.value ? 'Editar Cliente' : 'Novo Cliente';
     
-    if (isEditing.value) {
+    print('✏️ [ClientFormController] Modo de edição: ${isEditing.value}');
+    print('📄 [ClientFormController] Título da página: ${pageTitle.value}');
+    
+    if (isEditing.value && clientId != null) {
+      print('🔄 [ClientFormController] Carregando dados do cliente...');
       _loadClientData();
     } else {
+      print('📝 [ClientFormController] Modo de criação - formulário vazio');
       change(null, status: RxStatus.empty());
     }
   }
@@ -84,6 +91,7 @@ class ClientFormController extends GetxController with StateMixin<ClientModel>, 
   }
 
   void _loadClientData() {
+    print('🔍 [ClientFormController] Carregando dados para clientId: $clientId');
     change(null, status: RxStatus.loading());
     
     // Simula uma chamada de API para carregar dados do cliente
@@ -91,10 +99,14 @@ class ClientFormController extends GetxController with StateMixin<ClientModel>, 
       // Mock de dados baseado no ID
       final mockClient = _getMockClient(clientId!);
       
+      print('📋 [ClientFormController] Cliente encontrado: ${mockClient?.nomeNaFachada}');
+      
       if (mockClient != null) {
         _fillFormWithClientData(mockClient);
         change(mockClient, status: RxStatus.success());
+        print('✅ [ClientFormController] Dados carregados com sucesso');
       } else {
+        print('❌ [ClientFormController] Cliente não encontrado para ID: $clientId');
         change(null, status: RxStatus.error('Cliente não encontrado'));
       }
     });
@@ -115,7 +127,7 @@ class ClientFormController extends GetxController with StateMixin<ClientModel>, 
         cidade: 'São Paulo',
         estado: 'SP',
         conectaPlus: false,
-        tags: [],
+        tags: ['Restaurante', 'Bistrô'],
         createdAt: DateTime.now().subtract(const Duration(days: 30)),
         updatedAt: DateTime.now().subtract(const Duration(days: 5)),
       ),
@@ -132,9 +144,60 @@ class ClientFormController extends GetxController with StateMixin<ClientModel>, 
         cidade: 'São Paulo',
         estado: 'SP',
         conectaPlus: false,
-        tags: [],
+        tags: ['Restaurante', 'Alimentação'],
         createdAt: DateTime.now().subtract(const Duration(days: 60)),
         updatedAt: DateTime.now().subtract(const Duration(days: 10)),
+      ),
+      '3': ClientModel(
+        id: '3',
+        razaoSocial: 'TOKEN TEST LTDA',
+        nomeNaFachada: 'Geo Food',
+        cnpj: '64.132.434/0001-61',
+        status: 'Inativo',
+        cep: '12345-678',
+        rua: 'Rua do Comércio',
+        numero: '456',
+        bairro: 'Centro',
+        cidade: 'Rio de Janeiro',
+        estado: 'RJ',
+        conectaPlus: false,
+        tags: ['Delivery', 'Fast Food'],
+        createdAt: DateTime.now().subtract(const Duration(days: 15)),
+        updatedAt: DateTime.now().subtract(const Duration(days: 2)),
+      ),
+      '4': ClientModel(
+        id: '4',
+        razaoSocial: 'SUPERMERCADO CENTRAL LTDA',
+        nomeNaFachada: 'Super Central',
+        cnpj: '88.999.777/0001-55',
+        status: 'Ativo',
+        cep: '54321-987',
+        rua: 'Avenida Brasil',
+        numero: '789',
+        bairro: 'Copacabana',
+        cidade: 'Rio de Janeiro',
+        estado: 'RJ',
+        conectaPlus: true,
+        tags: ['Supermercado', 'Alimentação'],
+        createdAt: DateTime.now().subtract(const Duration(days: 45)),
+        updatedAt: DateTime.now().subtract(const Duration(days: 1)),
+      ),
+      '5': ClientModel(
+        id: '5',
+        razaoSocial: 'FARMÁCIA SAÚDE LTDA',
+        nomeNaFachada: 'Farmácia Saúde Plus',
+        cnpj: '22.333.444/0001-99',
+        status: 'Ativo',
+        cep: '87654-321',
+        rua: 'Rua da Saúde',
+        numero: '321',
+        bairro: 'Vila Nova',
+        cidade: 'Belo Horizonte',
+        estado: 'MG',
+        conectaPlus: true,
+        tags: ['Farmácia', 'Saúde'],
+        createdAt: DateTime.now().subtract(const Duration(days: 20)),
+        updatedAt: DateTime.now(),
       ),
     };
     
@@ -142,6 +205,8 @@ class ClientFormController extends GetxController with StateMixin<ClientModel>, 
   }
 
   void _fillFormWithClientData(ClientModel client) {
+    print('📝 [ClientFormController] Preenchendo formulário com dados do cliente: ${client.nomeNaFachada}');
+    
     nomeNaFachadaController.text = client.nomeNaFachada;
     cnpjController.text = client.cnpj;
     razaoSocialController.text = client.razaoSocial;
@@ -154,7 +219,18 @@ class ClientFormController extends GetxController with StateMixin<ClientModel>, 
     complementoController.text = client.complemento ?? '';
     selectedStatus.value = client.status;
     conectaPlus.value = client.conectaPlus;
-    tags.value = client.tags;
+    tags.value = List<String>.from(client.tags); // Cria uma nova lista
+    
+    print('📝 [ClientFormController] Campos preenchidos:');
+    print('   Nome na fachada: ${nomeNaFachadaController.text}');
+    print('   CNPJ: ${cnpjController.text}');
+    print('   Razão Social: ${razaoSocialController.text}');
+    print('   Status: ${selectedStatus.value}');
+    print('   Conecta Plus: ${conectaPlus.value}');
+    print('   Tags: ${tags.value}');
+    
+    // Força uma atualização da interface
+    update();
   }
 
   // Validações usando apenas validatorless
@@ -251,8 +327,12 @@ class ClientFormController extends GetxController with StateMixin<ClientModel>, 
   }
 
   String? validateTag(String? value) {
+    // Tags não são obrigatórias, apenas validamos se foram informadas
+    if (value == null || value.trim().isEmpty) {
+      return 'Tag não pode estar vazia';
+    }
+    
     return Validatorless.multiple([
-      Validatorless.required('Tag é obrigatória'),
       Validatorless.min(2, 'Tag deve ter pelo menos 2 caracteres'),
       Validatorless.max(20, 'Tag deve ter no máximo 20 caracteres'),
     ])(value);
@@ -347,15 +427,7 @@ class ClientFormController extends GetxController with StateMixin<ClientModel>, 
         // Navega de volta para admin
         GoRouter.of(context).go(AppRoutes.admin);
         
-        // Aguarda um pouco e tenta trocar para a aba de clientes
-        Future.delayed(const Duration(milliseconds: 200), () {
-          try {
-            final mainTabController = Get.find<TabController>(tag: 'mainTab');
-            mainTabController.animateTo(0); // Aba de clientes
-          } catch (e) {
-            print('Erro ao trocar para aba de clientes: $e');
-          }
-        });
+        print('✅ [ClientForm] Navegação concluída com sucesso');
       }
       
     } catch (e) {

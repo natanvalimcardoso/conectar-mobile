@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:go_router/go_router.dart';
 
 import '../../../core/models/client_model.dart';
 
@@ -183,38 +184,13 @@ class ClientsController extends GetxController with StateMixin<List<ClientModel>
   }
 
   void navigateToNewClient(BuildContext context) {
-    // Usa a função registrada na AdmController
-    try {
-      final newClientFunction = Get.find<VoidCallback>(tag: 'newClient');
-      newClientFunction();
-    } catch (e) {
-      print('Erro ao criar novo cliente: $e');
-      // Fallback - apenas troca para a aba
-      try {
-        Get.find<TabController>(tag: 'mainTab').animateTo(1);
-      } catch (e2) {
-        print('Erro no fallback: $e2');
-      }
-    }
+    // Navega para a página de novo cliente usando GoRouter
+    GoRouter.of(context).go('/admin/clients/new');
   }
 
   void navigateToEditClient(BuildContext context, String clientId) {
-    // Carrega os dados do cliente no formulário e troca para a aba
-    final client = _allClients.firstWhere((c) => c.id == clientId);
-    
-    // Usa a função registrada para editar o cliente
-    try {
-      final editFunction = Get.find<Function(ClientModel)>(tag: 'editClient');
-      editFunction(client);
-    } catch (e) {
-      print('Erro ao editar cliente: $e');
-      // Fallback - apenas troca para a aba
-      try {
-        Get.find<TabController>(tag: 'mainTab').animateTo(1);
-      } catch (e2) {
-        print('Erro no fallback: $e2');
-      }
-    }
+    // Navega para a página de edição usando GoRouter
+    GoRouter.of(context).go('/admin/clients/edit/$clientId');
   }
 
   Future<void> deleteClient(String clientId) async {

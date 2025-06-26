@@ -1,4 +1,5 @@
 import 'package:go_router/go_router.dart';
+import 'package:get/get.dart';
 
 import '../../modules/adm/adm_page.dart';
 import '../../modules/adm/adm_bindings.dart';
@@ -11,6 +12,7 @@ import '../../modules/auth/register/register_page.dart';
 import '../../modules/users/user_page.dart';
 import '../constants/route_constant.dart';
 import '../network/storage_client.dart';
+import '../../modules/adm/clients/client_form_controller.dart';
 
 
 
@@ -66,7 +68,20 @@ final GoRouter router = GoRouter(
         GoRoute(
           path: 'clients/edit/:id',
           builder: (context, state) {
-            ClientFormBindings().dependencies();
+            final clientId = state.pathParameters['id'];
+            print('🔍 [Routes] ID do cliente capturado: $clientId');
+            
+            // Remove controllers existentes
+            if (Get.isRegistered<ClientFormController>()) {
+              Get.delete<ClientFormController>(force: true);
+            }
+            
+            // Cria controller com o ID correto
+            Get.put<ClientFormController>(
+              ClientFormController(clientId: clientId),
+              permanent: false,
+            );
+            
             return const ClientFormPage();
           },
         ),

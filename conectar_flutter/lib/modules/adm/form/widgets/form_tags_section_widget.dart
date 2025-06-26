@@ -57,8 +57,19 @@ class FormAddTagWidget extends GetView<AdmFormController> {
   void _addTag(TextEditingController tagController) {
     final newTag = tagController.text.trim();
     if (newTag.isNotEmpty) {
-      controller.addTag(newTag);
-      tagController.clear();
+      final validationResult = controller.validateTag(newTag);
+      if (validationResult == null) {
+        controller.addTag(newTag);
+        tagController.clear();
+      } else {
+        Get.snackbar(
+          'Erro na Tag',
+          validationResult,
+          backgroundColor: Colors.red,
+          colorText: Colors.white,
+          duration: const Duration(seconds: 2),
+        );
+      }
     }
   }
 }

@@ -153,9 +153,20 @@ class ClientsDataTableWidget extends GetView<ClientsController> {
                       ),
                       DataCell(Text(client.conectaPlus ? 'Sim' : 'Não')),
                       DataCell(
-                        IconButton(
-                          icon: const Icon(Icons.delete, color: Colors.red),
-                          onPressed: () => _showDeleteDialog(context, client.id, client.razaoSocial),
+                        Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            IconButton(
+                              icon: const Icon(Icons.edit, color: Color(0xFF4CAF50)),
+                              tooltip: 'Editar',
+                              onPressed: () => controller.navigateToEditClient(context, client.id),
+                            ),
+                            IconButton(
+                              icon: const Icon(Icons.delete, color: Colors.red),
+                              tooltip: 'Deletar',
+                              onPressed: () => _showDeleteDialog(context, client.id, client.razaoSocial),
+                            ),
+                          ],
                         ),
                       ),
                     ],

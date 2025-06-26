@@ -33,7 +33,7 @@ class AddTagWidget extends GetView<ClientFormController> {
           child: CustomInputWidget(
             hintText: 'Digite uma tag e pressione Enter',
             controller: tagController,
-            validator: controller.validateTag,
+            validator: null,
             keyboardType: TextInputType.text,
             onChanged: (value) {
               if (value.endsWith('\n')) {
@@ -59,8 +59,19 @@ class AddTagWidget extends GetView<ClientFormController> {
   void _addTag(TextEditingController tagController) {
     final newTag = tagController.text.trim();
     if (newTag.isNotEmpty) {
-      controller.addTag(newTag);
-      tagController.clear();
+      final validationResult = controller.validateTag(newTag);
+      if (validationResult == null) {
+        controller.addTag(newTag);
+        tagController.clear();
+      } else {
+        Get.snackbar(
+          'Erro na Tag',
+          validationResult,
+          backgroundColor: Colors.red,
+          colorText: Colors.white,
+          duration: const Duration(seconds: 2),
+        );
+      }
     }
   }
 }
