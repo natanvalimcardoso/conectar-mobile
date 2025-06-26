@@ -12,7 +12,8 @@ class DioClient {
       baseUrl: 'http://localhost:3000/',
       connectTimeout: const Duration(seconds: 30),
       receiveTimeout: const Duration(seconds: 30),
-      sendTimeout: const Duration(seconds: 30),
+      // sendTimeout só para plataformas móveis - Web não suporta bem
+      sendTimeout: kIsWeb ? null : const Duration(seconds: 30),
       headers: {
         'Content-Type': 'application/json',
         'Accept': 'application/json',
@@ -39,16 +40,7 @@ class DioClient {
       InterceptorsWrapper(
         onRequest: (options, handler) async {
           final token = await StorageClient.getToken();
-          if (token != null) {
             options.headers['Authorization'] = 'Bearer $token';
-            if (!kReleaseMode) {
-              print('🔐 Token adicionado: ${token.substring(0, 20)}...');
-            }
-          } else {
-            if (!kReleaseMode) {
-              print('⚠️ Nenhum token encontrado!');
-            }
-          }
           
           return handler.next(options);
         },
