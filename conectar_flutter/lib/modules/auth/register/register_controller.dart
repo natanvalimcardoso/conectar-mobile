@@ -5,7 +5,6 @@ import 'package:validatorless/validatorless.dart';
 
 import '../../../core/constants/route_constant.dart';
 import '../../../core/models/register/register_request_model.dart';
-import '../../../core/models/register/register_response_model.dart';
 import '../../../core/models/user_model.dart';
 import '../../../core/repositories/register/register_repository.dart';
 import '../login/login_controller.dart';

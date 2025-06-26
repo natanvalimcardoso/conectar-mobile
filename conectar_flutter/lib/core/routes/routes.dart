@@ -1,6 +1,7 @@
 import 'package:go_router/go_router.dart';
 
 import '../../modules/adm/adm_page.dart';
+import '../../modules/adm/adm_bindings.dart';
 import '../../modules/adm/clients/client_form_page.dart';
 import '../../modules/adm/clients/client_form_bindings.dart';
 import '../../modules/auth/login/login_bindings.dart';
@@ -51,6 +52,7 @@ final GoRouter router = GoRouter(
     GoRoute(
       path: AppRoutes.admin,
       builder: (context, state) {
+        AdmBindings().dependencies();
         return const AdmPage();
       },
       routes: [

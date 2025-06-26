@@ -114,4 +114,15 @@ class ClientModel {
       updatedAt: updatedAt ?? this.updatedAt,
     );
   }
+
+  @override
+  bool operator ==(Object other) {
+    if (identical(this, other)) return true;
+    
+    return other is ClientModel &&
+        other.cnpj == cnpj; // Dois clientes são iguais se têm o mesmo CNPJ
+  }
+
+  @override
+  int get hashCode => cnpj.hashCode; // Hash baseado no CNPJ
 } 

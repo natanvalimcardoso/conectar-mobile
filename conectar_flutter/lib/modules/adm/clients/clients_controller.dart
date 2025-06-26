@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:go_router/go_router.dart';
 
-import '../../../core/constants/route_constant.dart';
 import '../../../core/models/client_model.dart';
 
 class ClientsController extends GetxController with StateMixin<List<ClientModel>> {
@@ -15,8 +13,8 @@ class ClientsController extends GetxController with StateMixin<List<ClientModel>
   // Estado dos filtros
   final isFiltersExpanded = false.obs;
 
-  // Lista completa de clientes (mock)
-  final List<ClientModel> _allClients = [
+  // Set completo de clientes (mock) - não permite duplicações automáticas
+  final Set<ClientModel> _allClients = {
     ClientModel(
       id: '1',
       razaoSocial: 'TOKEN TEST LTDA',
@@ -30,7 +28,7 @@ class ClientsController extends GetxController with StateMixin<List<ClientModel>
       cidade: 'São Paulo',
       estado: 'SP',
       conectaPlus: false,
-      tags: [],
+      tags: ['Restaurante', 'Bistrô'],
       createdAt: DateTime.now().subtract(const Duration(days: 30)),
       updatedAt: DateTime.now().subtract(const Duration(days: 5)),
     ),
@@ -47,7 +45,7 @@ class ClientsController extends GetxController with StateMixin<List<ClientModel>
       cidade: 'São Paulo',
       estado: 'SP',
       conectaPlus: false,
-      tags: [],
+      tags: ['Restaurante', 'Alimentação'],
       createdAt: DateTime.now().subtract(const Duration(days: 60)),
       updatedAt: DateTime.now().subtract(const Duration(days: 10)),
     ),
@@ -64,7 +62,7 @@ class ClientsController extends GetxController with StateMixin<List<ClientModel>
       cidade: 'Rio de Janeiro',
       estado: 'RJ',
       conectaPlus: false,
-      tags: [],
+      tags: ['Delivery', 'Fast Food'],
       createdAt: DateTime.now().subtract(const Duration(days: 15)),
       updatedAt: DateTime.now().subtract(const Duration(days: 2)),
     ),
@@ -102,9 +100,9 @@ class ClientsController extends GetxController with StateMixin<List<ClientModel>
       createdAt: DateTime.now().subtract(const Duration(days: 20)),
       updatedAt: DateTime.now(),
     ),
-  ];
+  };
 
-  // Lista filtrada
+  // Lista filtrada para a UI
   final RxList<ClientModel> filteredClients = <ClientModel>[].obs;
 
   @override
@@ -125,8 +123,8 @@ class ClientsController extends GetxController with StateMixin<List<ClientModel>
 
     // Simula uma chamada de API
     Future.delayed(const Duration(milliseconds: 500), () {
-      filteredClients.value = _allClients;
-      change(_allClients, status: RxStatus.success());
+      filteredClients.value = _allClients.toList();
+      change(_allClients.toList(), status: RxStatus.success());
     });
   }
 
@@ -141,8 +139,8 @@ class ClientsController extends GetxController with StateMixin<List<ClientModel>
     selectedConectaPlus.value = null;
 
     // Recarrega todos os clientes
-    filteredClients.value = _allClients;
-    change(_allClients, status: RxStatus.success());
+    filteredClients.value = _allClients.toList();
+    change(_allClients.toList(), status: RxStatus.success());
   }
 
   void applyFilters() {
@@ -150,7 +148,7 @@ class ClientsController extends GetxController with StateMixin<List<ClientModel>
 
     // Simula uma chamada de API com filtros
     Future.delayed(const Duration(milliseconds: 300), () {
-      List<ClientModel> filtered = _allClients;
+      List<ClientModel> filtered = _allClients.toList();
 
       // Filtro por nome
       if (nomeController.text.isNotEmpty) {
@@ -185,11 +183,38 @@ class ClientsController extends GetxController with StateMixin<List<ClientModel>
   }
 
   void navigateToNewClient(BuildContext context) {
-    GoRouter.of(context).go('${AppRoutes.admin}/clients/new');
+    // Usa a função registrada na AdmController
+    try {
+      final newClientFunction = Get.find<VoidCallback>(tag: 'newClient');
+      newClientFunction();
+    } catch (e) {
+      print('Erro ao criar novo cliente: $e');
+      // Fallback - apenas troca para a aba
+      try {
+        Get.find<TabController>(tag: 'mainTab').animateTo(1);
+      } catch (e2) {
+        print('Erro no fallback: $e2');
+      }
+    }
   }
 
   void navigateToEditClient(BuildContext context, String clientId) {
-    GoRouter.of(context).go('${AppRoutes.admin}/clients/edit/$clientId');
+    // Carrega os dados do cliente no formulário e troca para a aba
+    final client = _allClients.firstWhere((c) => c.id == clientId);
+    
+    // Usa a função registrada para editar o cliente
+    try {
+      final editFunction = Get.find<Function(ClientModel)>(tag: 'editClient');
+      editFunction(client);
+    } catch (e) {
+      print('Erro ao editar cliente: $e');
+      // Fallback - apenas troca para a aba
+      try {
+        Get.find<TabController>(tag: 'mainTab').animateTo(1);
+      } catch (e2) {
+        print('Erro no fallback: $e2');
+      }
+    }
   }
 
   Future<void> deleteClient(String clientId) async {
@@ -200,15 +225,43 @@ class ClientsController extends GetxController with StateMixin<List<ClientModel>
   }
 
   void addClient(ClientModel newClient) {
-    _allClients.add(newClient);
-    applyFilters(); // Reaplica os filtros para atualizar a lista exibida
+    print('📝 Tentando adicionar cliente: ${newClient.nomeNaFachada}');
+    print('🏷️ Tags do cliente recebido: ${newClient.tags}');
+    
+    // O Set automaticamente previne duplicações baseadas no equals/hashCode (CNPJ)
+    final wasAdded = _allClients.add(newClient);
+    
+    if (!wasAdded) {
+      print('⚠️ Cliente com CNPJ ${newClient.cnpj} já existe no Set. Duplicação automaticamente prevenida.');
+      return;
+    }
+    
+    // Atualiza tanto a lista filtrada quanto o estado principal
+    filteredClients.value = _allClients.toList();
+    
+    // Força atualização do estado
+    change(_allClients.toList(), status: RxStatus.success());
+    
+    print('📊 Total de clientes agora: ${_allClients.length}');
+    print('✅ Cliente adicionado com sucesso: ${newClient.nomeNaFachada} com tags: ${newClient.tags}');
   }
 
   void updateClient(ClientModel updatedClient) {
-    final index = _allClients.indexWhere((client) => client.id == updatedClient.id);
-    if (index != -1) {
-      _allClients[index] = updatedClient;
-      applyFilters(); // Reaplica os filtros para atualizar a lista exibida
+    print('✏️ Atualizando cliente: ${updatedClient.nomeNaFachada}');
+    
+    // Remove o cliente antigo (se existir) e adiciona o atualizado
+    _allClients.removeWhere((client) => client.id == updatedClient.id);
+    _allClients.add(updatedClient);
+    
+    // Atualiza na lista filtrada também
+    final filteredIndex = filteredClients.indexWhere((client) => client.id == updatedClient.id);
+    if (filteredIndex != -1) {
+      filteredClients[filteredIndex] = updatedClient;
     }
+    
+    // Força atualização do estado
+    change(_allClients.toList(), status: RxStatus.success());
+    
+    print('✅ Cliente atualizado com sucesso');
   }
 }

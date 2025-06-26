@@ -40,6 +40,8 @@ dependencies:
   get: ^4.7.2
   go_router: ^14.6.1
   validatorless: ^1.2.3
+  brasil_fields: ^1.15.0
+  mask_text_input_formatter: ^2.9.0
 
 dev_dependencies:
   flutter_test:

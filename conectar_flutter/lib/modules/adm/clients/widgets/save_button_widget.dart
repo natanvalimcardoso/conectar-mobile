@@ -11,7 +11,12 @@ class SaveButtonWidget extends GetView<ClientFormController> {
     return Obx(() => ElevatedButton(
       onPressed: controller.isLoading.value
           ? null
-          : () => controller.saveClient(context),
+          : () {
+              // Proteção adicional contra duplo clique
+              if (!controller.isLoading.value) {
+                controller.saveClient(context);
+              }
+            },
       style: ElevatedButton.styleFrom(
         backgroundColor: const Color(0xFF4CAF50),
         foregroundColor: Colors.white,

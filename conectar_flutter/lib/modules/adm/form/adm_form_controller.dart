@@ -1,18 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:go_router/go_router.dart';
 import 'package:validatorless/validatorless.dart';
 import 'package:mask_text_input_formatter/mask_text_input_formatter.dart';
 
-import '../../../core/constants/route_constant.dart';
 import '../../../core/models/client_model.dart';
-import 'clients_controller.dart';
+import '../clients/clients_controller.dart';
 
-class ClientFormController extends GetxController with StateMixin<ClientModel>, GetSingleTickerProviderStateMixin {
-  final String? clientId;
-  
-  ClientFormController({this.clientId});
-
+class AdmFormController extends GetxController with GetSingleTickerProviderStateMixin {
   // TabController
   late TabController tabController;
 
@@ -51,20 +45,15 @@ class ClientFormController extends GetxController with StateMixin<ClientModel>, 
   
   final isEditing = false.obs;
   final isLoading = false.obs;
+  final isSaving = false.obs;
   final pageTitle = 'Novo Cliente'.obs;
+  final editingClientId = Rx<String?>(null);
 
   @override
   void onInit() {
     super.onInit();
     tabController = TabController(length: 3, vsync: this);
-    isEditing.value = clientId != null;
-    pageTitle.value = isEditing.value ? 'Editar Cliente' : 'Novo Cliente';
-    
-    if (isEditing.value) {
-      _loadClientData();
-    } else {
-      change(null, status: RxStatus.empty());
-    }
+    resetForm();
   }
 
   @override
@@ -83,62 +72,20 @@ class ClientFormController extends GetxController with StateMixin<ClientModel>, 
     super.onClose();
   }
 
-  void _loadClientData() {
-    change(null, status: RxStatus.loading());
-    
-    // Simula uma chamada de API para carregar dados do cliente
-    Future.delayed(const Duration(milliseconds: 500), () {
-      // Mock de dados baseado no ID
-      final mockClient = _getMockClient(clientId!);
-      
-      if (mockClient != null) {
-        _fillFormWithClientData(mockClient);
-        change(mockClient, status: RxStatus.success());
-      } else {
-        change(null, status: RxStatus.error('Cliente não encontrado'));
-      }
-    });
+  void resetForm() {
+    clearForm();
+    isEditing.value = false;
+    isLoading.value = false;
+    isSaving.value = false;
+    editingClientId.value = null;
+    pageTitle.value = 'Novo Cliente';
   }
 
-  ClientModel? _getMockClient(String id) {
-    final mockClients = {
-      '1': ClientModel(
-        id: '1',
-        razaoSocial: 'TOKEN TEST LTDA',
-        nomeNaFachada: 'JOANINHA BISTRÔ',
-        cnpj: '71.567.504/0001-74',
-        status: 'Inativo',
-        cep: '01310-100',
-        rua: 'Avenida Paulista',
-        numero: '1000',
-        bairro: 'Bela Vista',
-        cidade: 'São Paulo',
-        estado: 'SP',
-        conectaPlus: false,
-        tags: [],
-        createdAt: DateTime.now().subtract(const Duration(days: 30)),
-        updatedAt: DateTime.now().subtract(const Duration(days: 5)),
-      ),
-      '2': ClientModel(
-        id: '2',
-        razaoSocial: 'RESTAURANTE BOA VISTA',
-        nomeNaFachada: 'RESTAURANTE BOA VISTA',
-        cnpj: '71.673.090/0001-77',
-        status: 'Inativo',
-        cep: '04567-890',
-        rua: 'Rua das Flores',
-        numero: '123',
-        bairro: 'Vila Madalena',
-        cidade: 'São Paulo',
-        estado: 'SP',
-        conectaPlus: false,
-        tags: [],
-        createdAt: DateTime.now().subtract(const Duration(days: 60)),
-        updatedAt: DateTime.now().subtract(const Duration(days: 10)),
-      ),
-    };
-    
-    return mockClients[id];
+  void editClient(ClientModel client) {
+    isEditing.value = true;
+    editingClientId.value = client.id;
+    pageTitle.value = 'Editar Cliente';
+    _fillFormWithClientData(client);
   }
 
   void _fillFormWithClientData(ClientModel client) {
@@ -263,22 +210,24 @@ class ClientFormController extends GetxController with StateMixin<ClientModel>, 
       return;
     }
 
-    // Proteção contra duplo clique
-    if (isLoading.value) {
-      print('⚠️ [ClientForm] Salvamento já em andamento, ignorando...');
+    // Proteção tripla contra duplo clique
+    if (isLoading.value || isSaving.value) {
+      print('⚠️ Salvamento já em andamento, ignorando... (isLoading: ${isLoading.value}, isSaving: ${isSaving.value})');
       return;
     }
 
+    // Marca as duas flags como true
     isLoading.value = true;
+    isSaving.value = true;
     
     try {
-      print('🏷️ [ClientForm] Tags no formulário: ${tags.toList()}');
+      print('🏷️ Tags no formulário: ${tags.toList()}');
       
       // Simula uma chamada de API
       await Future.delayed(const Duration(milliseconds: 1000));
       
       // Gera um ID único mais robusto
-      final clientId = this.clientId ?? '${DateTime.now().millisecondsSinceEpoch}_${nomeNaFachadaController.text.hashCode.abs()}';
+      final clientId = editingClientId.value ?? '${DateTime.now().millisecondsSinceEpoch}_${nomeNaFachadaController.text.hashCode.abs()}';
       
       final clientData = ClientModel(
         id: clientId,
@@ -295,28 +244,28 @@ class ClientFormController extends GetxController with StateMixin<ClientModel>, 
         complemento: complementoController.text.trim(),
         conectaPlus: conectaPlus.value,
         tags: tags.toList(), // Garante que é uma nova lista
-        createdAt: state?.createdAt ?? DateTime.now(),
+        createdAt: DateTime.now(),
         updatedAt: DateTime.now(),
       );
 
-      print('🏷️ [ClientForm] Tags no cliente criado: ${clientData.tags}');
+      print('🏷️ Tags no cliente criado: ${clientData.tags}');
 
       // Adiciona o cliente à lista no ClientsController
       if (Get.isRegistered<ClientsController>()) {
         final clientsController = Get.find<ClientsController>();
-        print('🔍 [ClientForm] ClientsController encontrado: ${clientsController.runtimeType}');
+        print('🔍 ClientsController encontrado: ${clientsController.runtimeType}');
         
         if (isEditing.value) {
-          print('✏️ [ClientForm] Atualizando cliente existente: ${clientData.nomeNaFachada}');
+          print('✏️ Atualizando cliente existente: ${clientData.nomeNaFachada}');
           clientsController.updateClient(clientData);
         } else {
-          print('➕ [ClientForm] Adicionando novo cliente: ${clientData.nomeNaFachada}');
+          print('➕ Adicionando novo cliente: ${clientData.nomeNaFachada}');
           clientsController.addClient(clientData);
         }
         
-        print('📋 [ClientForm] Cliente processado com sucesso');
+        print('📋 Cliente processado com sucesso');
       } else {
-        print('❌ [ClientForm] ClientsController não encontrado!');
+        print('❌ ClientsController não encontrado!');
       }
 
       // Mostra mensagem de sucesso
@@ -333,29 +282,16 @@ class ClientFormController extends GetxController with StateMixin<ClientModel>, 
           ),
         );
 
-        // Para novos clientes, limpa apenas os campos principais mantendo endereço
-        if (!isEditing.value) {
-          nomeNaFachadaController.clear();
-          cnpjController.clear();
-          razaoSocialController.clear();
-          // Mantém endereço para facilitar cadastro de clientes na mesma região
+        // Reseta o formulário
+        resetForm();
+        
+        // Navega para a aba de clientes
+        try {
+          final mainTabController = Get.find<TabController>(tag: 'mainTab');
+          mainTabController.animateTo(0); // Aba de clientes
+        } catch (e) {
+          print('Erro ao trocar para aba de clientes: $e');
         }
-
-        // Aguarda um pouco antes de navegar para mostrar o SnackBar
-        await Future.delayed(const Duration(milliseconds: 500));
-        
-        // Navega de volta para admin
-        GoRouter.of(context).go(AppRoutes.admin);
-        
-        // Aguarda um pouco e tenta trocar para a aba de clientes
-        Future.delayed(const Duration(milliseconds: 200), () {
-          try {
-            final mainTabController = Get.find<TabController>(tag: 'mainTab');
-            mainTabController.animateTo(0); // Aba de clientes
-          } catch (e) {
-            print('Erro ao trocar para aba de clientes: $e');
-          }
-        });
       }
       
     } catch (e) {
@@ -370,12 +306,14 @@ class ClientFormController extends GetxController with StateMixin<ClientModel>, 
         );
       }
     } finally {
+      // Reseta ambas as flags
       isLoading.value = false;
+      isSaving.value = false;
     }
   }
 
   void cancel(BuildContext context) {
-    GoRouter.of(context).go(AppRoutes.admin);
+    resetForm();
   }
 
   void clearForm() {
@@ -409,5 +347,4 @@ class ClientFormController extends GetxController with StateMixin<ClientModel>, 
   bool hasTag(String tag) {
     return tags.contains(tag);
   }
-
 } 
