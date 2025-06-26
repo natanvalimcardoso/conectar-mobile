@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
-import '../../themes/app_color.dart';
-
 class CustomInputWidget extends StatefulWidget {  
   final String hintText;
   final TextEditingController? controller;

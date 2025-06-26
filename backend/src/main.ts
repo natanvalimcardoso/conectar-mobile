@@ -10,7 +10,7 @@ async function bootstrap() {
     origin:
       process.env.NODE_ENV === 'production'
         ? ['https://your-frontend-domain.com']
-        : ['http://localhost:5173', 'http://localhost:3000'],
+        : true, // Durante desenvolvimento, permite qualquer origem
     methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
     credentials: true,
   });

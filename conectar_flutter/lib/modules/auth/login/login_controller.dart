@@ -21,12 +21,25 @@ class LoginController extends GetxController with StateMixin<UserModel> {
   final formKey = GlobalKey<FormState>();
 
   @override
+  void onInit() {
+    super.onInit();
+    change(null, status: RxStatus.empty());
+  }
+
+  @override
   void onClose() {
     emailController.dispose();
     passwordController.dispose();
     super.onClose();
   }
 
+  /// Limpa os dados do formulário e reseta o estado
+  void clearForm() {
+    emailController.clear();
+    passwordController.clear();
+    formKey.currentState?.reset();
+    change(null, status: RxStatus.empty());
+  }
 
 
   String? validateEmail(String? email) {
@@ -76,9 +89,18 @@ class LoginController extends GetxController with StateMixin<UserModel> {
   }
 
   void navigateToHome(BuildContext context) {
-    if (status.isSuccess) {
-      GoRouter.of(context).go(AppRoutes.home);
+    if (status.isSuccess && state != null) {
+      final userRole = state!.role.toLowerCase();
+      
+      if (userRole == 'admin') {
+        GoRouter.of(context).go(AppRoutes.admin);
+      } else {
+        GoRouter.of(context).go(AppRoutes.user);
+      }
     }
   }
 
+  void navigateToRegister(BuildContext context) {
+    GoRouter.of(context).go(AppRoutes.register);
+  }
 }

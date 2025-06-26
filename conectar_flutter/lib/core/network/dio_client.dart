@@ -9,15 +9,17 @@ class DioClient {
 
   DioClient({required this.dio}) {
     dio.options = BaseOptions(
-      baseUrl: 'https://rational-jawfish-positive.ngrok-free.app/iumi/v1/',
-      connectTimeout: const Duration(seconds: 90),
-      receiveTimeout: kIsWeb ? null : const Duration(seconds: 90),
-      sendTimeout: kIsWeb ? null : const Duration(seconds: 90),
+      baseUrl: 'http://localhost:3000/',
+      connectTimeout: const Duration(seconds: 30),
+      receiveTimeout: const Duration(seconds: 30),
+      sendTimeout: const Duration(seconds: 30),
       headers: {
         'Content-Type': 'application/json',
         'Accept': 'application/json',
-        'ngrok-skip-browser-warning': 'true',
       },
+      responseType: ResponseType.json,
+      followRedirects: true,
+      validateStatus: (status) => status != null && status < 500,
     );
 
     if (!kReleaseMode) {
@@ -40,10 +42,16 @@ class DioClient {
           if (token != null) {
             options.headers['Authorization'] = 'Bearer $token';
           }
+          
           return handler.next(options);
         },
         onError: (error, handler) {
           _logDioError(error);
+          
+          if (kIsWeb && error.type == DioExceptionType.connectionError) {
+            print('🔄 Tentando reconectar em caso de erro de CORS...');
+          }
+          
           return handler.next(error);
         },
       ),

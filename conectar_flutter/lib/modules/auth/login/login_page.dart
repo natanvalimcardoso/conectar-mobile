@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
 import '../../../core/constants/image_constant.dart';
-import '../../../core/helpers/snackbars/snackbar_helper.dart';
 import '../../../core/widgets/inputs/custom_input_widget.dart';
 import 'login_controller.dart';
 
@@ -11,6 +10,7 @@ class LoginPage extends GetView<LoginController> {
 
   @override
   Widget build(BuildContext context) {
+
     final size = MediaQuery.sizeOf(context);
     final isWeb = size.width > 600;
 
@@ -74,41 +74,133 @@ class LoginPage extends GetView<LoginController> {
                         
                         const SizedBox(height: 32),
                         
-                        SizedBox(
-                          height: 48,
-                          child: ElevatedButton(
-                            onPressed: () async {
-                              await controller.login();
-                              
-                              if (!context.mounted) return;
-                              
-                              if (controller.status.isSuccess) {
-                                SnackbarHelper.showSuccess( 
-                                  title: 'Sucesso',
-                                  subtitle: 'Login realizado com sucesso!',
-                                );
-                                controller.navigateToHome(context);
-                              } else if (controller.status.isError) {
-                                SnackbarHelper.showError(
-                                  title: 'Erro',
-                                  subtitle: controller.status.errorMessage ?? 'Erro desconhecido',
-                                );
-                              }
-                            },
-                            style: ElevatedButton.styleFrom(
-                              backgroundColor: const Color(0xFF4CAF50),
-                              foregroundColor: Colors.white,
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(8),
+                        controller.obx(
+                          (state) {
+                            // Quando o login for bem-sucedido, navega para a próxima tela
+                            WidgetsBinding.instance.addPostFrameCallback((_) {
+                              controller.navigateToHome(context);
+                            });
+                            
+                            return SizedBox(
+                              height: 48,
+                              child: ElevatedButton(
+                                onPressed: null,
+                                style: ElevatedButton.styleFrom(
+                                  backgroundColor: Colors.green,
+                                  foregroundColor: Colors.white,
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(8),
+                                  ),
+                                  elevation: 0,
+                                ),
+                                child: const Row(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    Icon(Icons.check, size: 20),
+                                    SizedBox(width: 8),
+                                    Text(
+                                      'Login realizado!',
+                                      style: TextStyle(
+                                        fontSize: 16,
+                                        fontWeight: FontWeight.w600,
+                                      ),
+                                    ),
+                                  ],
+                                ),
                               ),
-                              elevation: 0,
+                            );
+                          },
+                          onLoading: SizedBox(
+                            height: 48,
+                            child: ElevatedButton(
+                              onPressed: null,
+                              style: ElevatedButton.styleFrom(
+                                backgroundColor: const Color(0xFF4CAF50),
+                                foregroundColor: Colors.white,
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(8),
+                                ),
+                                elevation: 0,
+                              ),
+                              child: const SizedBox(
+                                height: 20,
+                                width: 20,
+                                child: CircularProgressIndicator(
+                                  color: Colors.white,
+                                  strokeWidth: 2,
+                                ),
+                              ),
                             ),
-                            child: const Text(
-                              'Entrar',
-                              style: TextStyle(
-                                fontSize: 16,
-                                fontWeight: FontWeight.w600,
+                          ),
+                          onEmpty: SizedBox(
+                            height: 48,
+                            child: ElevatedButton(
+                              onPressed: () => controller.login(),
+                              style: ElevatedButton.styleFrom(
+                                backgroundColor: const Color(0xFF4CAF50),
+                                foregroundColor: Colors.white,
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(8),
+                                ),
+                                elevation: 0,
                               ),
+                              child: const Text(
+                                'Entrar',
+                                style: TextStyle(
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.w600,
+                                ),
+                              ),
+                            ),
+                          ),
+                          onError: (error) => Column(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Text(
+                                error ?? 'Erro ao fazer login',
+                                style: const TextStyle(
+                                  color: Colors.red,
+                                  fontSize: 12,
+                                ),
+                                textAlign: TextAlign.center,
+                                maxLines: 2,
+                                overflow: TextOverflow.ellipsis,
+                              ),
+                              const SizedBox(height: 8),
+                              SizedBox(
+                                height: 48,
+                                child: ElevatedButton(
+                                  onPressed: () => controller.login(),
+                                  style: ElevatedButton.styleFrom(
+                                    backgroundColor: Colors.red,
+                                    foregroundColor: Colors.white,
+                                    shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(8),
+                                    ),
+                                    elevation: 0,
+                                  ),
+                                  child: const Text(
+                                    'Tente novamente',
+                                    style: TextStyle(
+                                      fontSize: 16,
+                                      fontWeight: FontWeight.w600,
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                        
+                        const SizedBox(height: 16),
+                        
+                        TextButton(
+                          onPressed: () => controller.navigateToRegister(context),
+                          child: const Text(
+                            'Não tem conta? Criar uma nova',
+                            style: TextStyle(
+                              color: Color(0xFF4CAF50),
+                              fontWeight: FontWeight.w500,
                             ),
                           ),
                         ),

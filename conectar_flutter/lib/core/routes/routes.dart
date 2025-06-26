@@ -1,7 +1,11 @@
 import 'package:go_router/go_router.dart';
 
+import '../../modules/adm/adm_page.dart';
 import '../../modules/auth/login/login_bindings.dart';
 import '../../modules/auth/login/login_page.dart';
+import '../../modules/auth/register/register_bindings.dart';
+import '../../modules/auth/register/register_page.dart';
+import '../../modules/users/user_page.dart';
 import '../constants/route_constant.dart';
 import '../network/storage_client.dart';
 
@@ -26,6 +30,25 @@ final GoRouter router = GoRouter(
       builder: (context, state) {
         LoginBindings().dependencies();
         return const LoginPage();
+      },
+    ),
+    GoRoute(
+      path: AppRoutes.register,
+      builder: (context, state) {
+        RegisterBindings().dependencies();
+        return const RegisterPage();
+      },
+    ),
+    GoRoute(
+      path: AppRoutes.user,
+      builder: (context, state) {
+        return const UserPage();
+      },
+    ),
+    GoRoute(
+      path: AppRoutes.admin,
+      builder: (context, state) {
+        return const AdmPage();
       },
     ),
   ],

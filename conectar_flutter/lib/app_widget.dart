@@ -14,7 +14,8 @@ class AppWidget extends StatelessWidget {
       initialBinding: AppBindings(),
       theme: ThemeData(
         primarySwatch: Colors.green,
-        fontFamily: 'Roboto',
+        fontFamily: null, // Usa fonte padrão do sistema
+        useMaterial3: true,
       ),
       routerDelegate: router.routerDelegate,
       routeInformationParser: router.routeInformationParser,
