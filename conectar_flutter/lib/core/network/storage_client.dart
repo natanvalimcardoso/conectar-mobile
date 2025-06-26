@@ -36,6 +36,19 @@ class StorageClient {
     }
   }
 
+  static Future<bool> hasValidToken() async {
+    try {
+      final token = await getToken();
+      if (token == null || token.isEmpty) return false;
+      
+      // Verifica se o token tem um formato básico válido (JWT)
+      final parts = token.split('.');
+      return parts.length == 3;
+    } catch (e) {
+      return false;
+    }
+  }
+
   static Future<void> removeToken() async {
     try {
       await _storage.delete(key: _accessTokenKey);

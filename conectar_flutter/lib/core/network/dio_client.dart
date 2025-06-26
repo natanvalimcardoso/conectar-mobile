@@ -41,12 +41,26 @@ class DioClient {
           final token = await StorageClient.getToken();
           if (token != null) {
             options.headers['Authorization'] = 'Bearer $token';
+            if (!kReleaseMode) {
+              print('🔐 Token adicionado: ${token.substring(0, 20)}...');
+            }
+          } else {
+            if (!kReleaseMode) {
+              print('⚠️ Nenhum token encontrado!');
+            }
           }
           
           return handler.next(options);
         },
         onError: (error, handler) {
           _logDioError(error);
+          
+          // Log específico para erro de acesso negado
+          if (error.response?.statusCode == 200 && 
+              error.response?.data['success'] == false &&
+              error.response?.data['message'] == 'Acesso negado') {
+            print('🚫 Acesso negado - Token inválido ou expirado');
+          }
           
           if (kIsWeb && error.type == DioExceptionType.connectionError) {
             print('🔄 Tentando reconectar em caso de erro de CORS...');

@@ -1,80 +1,100 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:go_router/go_router.dart';
 
-import '../../core/constants/route_constant.dart';
-import '../../core/network/storage_client.dart';
-import '../auth/login/login_controller.dart';
+import 'user_controller.dart';
+import 'widgets/user_profile_widget.dart';
 
-class UserPage extends StatelessWidget {
+class UserPage extends GetView<UserController> {
   const UserPage({super.key});
-
-  Future<void> _logout(BuildContext context) async {
-    try {
-      await StorageClient.removeToken();
-      
-      // Limpa os dados do controller de login se existir
-      if (Get.isRegistered<LoginController>()) {
-        Get.find<LoginController>().clearForm();
-      }
-      
-      if (context.mounted) {
-        GoRouter.of(context).go(AppRoutes.login);
-      }
-    } catch (e) {
-      // Se houver erro, ainda assim navega para login
-      if (context.mounted) {
-        GoRouter.of(context).go(AppRoutes.login);
-      }
-    }
-  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.grey[50],
       appBar: AppBar(
-        title: const Text('Painel do Usuário'),
         backgroundColor: const Color(0xFF4CAF50),
         foregroundColor: Colors.white,
+        elevation: 0,
+        title: Row(
+          children: [
+            Image.asset(
+              'assets/pngs/conectar.png',
+              height: 24,
+              color: Colors.white,
+            ),
+            const SizedBox(width: 8),
+            const Text(
+              'Meu Perfil',
+              style: TextStyle(
+                fontWeight: FontWeight.bold,
+                fontSize: 20,
+              ),
+            ),
+          ],
+        ),
         actions: [
           IconButton(
-            onPressed: () => _logout(context),
+            onPressed: () => controller.logout(context),
             icon: const Icon(Icons.logout),
             tooltip: 'Sair',
           ),
         ],
       ),
-      body: const Center(
-        child: Padding(
-          padding: EdgeInsets.all(24.0),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Icon(
-                Icons.person,
-                size: 80,
-                color: Color(0xFF4CAF50),
-              ),
-              SizedBox(height: 24),
-              Text(
-                'Bem-vindo ao Painel do Usuário!',
-                style: TextStyle(
-                  fontSize: 24,
-                  fontWeight: FontWeight.bold,
-                  color: Color(0xFF4CAF50),
+      body: controller.obx(
+        (user) => const UserProfileWidget(),
+        onLoading: const Center(
+          child: CircularProgressIndicator(
+            color: Color(0xFF4CAF50),
+          ),
+        ),
+        onError: (error) => Center(
+          child: Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                const Icon(
+                  Icons.error_outline,
+                  size: 64,
+                  color: Colors.red,
                 ),
-                textAlign: TextAlign.center,
-              ),
-              SizedBox(height: 16),
-              Text(
-                'Você está logado como usuário.',
-                style: TextStyle(
-                  fontSize: 16,
-                  color: Colors.grey,
+                const SizedBox(height: 16),
+                const Text(
+                  'Erro ao carregar perfil',
+                  style: TextStyle(
+                    fontSize: 18,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.red,
+                  ),
                 ),
-                textAlign: TextAlign.center,
-              ),
-            ],
+                const SizedBox(height: 8),
+                Text(
+                  error ?? 'Erro desconhecido',
+                  style: const TextStyle(color: Colors.grey),
+                  textAlign: TextAlign.center,
+                ),
+                const SizedBox(height: 16),
+                if (error != null && (error.contains('Token inválido') || error.contains('login')))
+                  ElevatedButton.icon(
+                    onPressed: () => controller.logout(context),
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.orange,
+                      foregroundColor: Colors.white,
+                    ),
+                    icon: const Icon(Icons.login),
+                    label: const Text('Fazer Login'),
+                  )
+                else
+                  ElevatedButton(
+                    onPressed: controller.loadUserProfile,
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: const Color(0xFF4CAF50),
+                      foregroundColor: Colors.white,
+                    ),
+                    child: const Text('Tentar novamente'),
+                  ),
+              ],
+            ),
           ),
         ),
       ),

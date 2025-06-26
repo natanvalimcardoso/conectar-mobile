@@ -10,6 +10,8 @@ import '../../modules/auth/login/login_page.dart';
 import '../../modules/auth/register/register_bindings.dart';
 import '../../modules/auth/register/register_page.dart';
 import '../../modules/users/user_page.dart';
+import '../../modules/users/user_bindings.dart';
+import '../../modules/users/user_controller.dart';
 import '../constants/route_constant.dart';
 import '../network/storage_client.dart';
 import '../../modules/adm/clients/client_form_controller.dart';
@@ -48,6 +50,18 @@ final GoRouter router = GoRouter(
     GoRoute(
       path: AppRoutes.user,
       builder: (context, state) {
+        // Remove qualquer instância anterior para evitar conflitos
+        try {
+          if (Get.isRegistered<UserController>()) {
+            Get.delete<UserController>(force: true);
+          }
+        } catch (e) {
+          print('Ignorando erro ao remover controller: $e');
+        }
+        
+        // Força o registro das dependências
+        UserBindings().dependencies();
+        
         return const UserPage();
       },
     ),
