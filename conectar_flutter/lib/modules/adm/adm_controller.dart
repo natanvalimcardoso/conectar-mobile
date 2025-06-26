@@ -6,9 +6,9 @@ import '../../core/constants/route_constant.dart';
 import '../../core/network/storage_client.dart';
 import '../../core/models/client_model.dart';
 import '../auth/login/login_controller.dart';
-import 'clients/clients_controller.dart';
-import 'form/adm_form_controller.dart';
-import 'clients/client_form_controller.dart';
+import '../clients/clients_controller.dart';
+import '../form/adm_form_controller.dart';
+import '../clients/client_form_controller.dart';
 
 class AdmController extends GetxController with GetSingleTickerProviderStateMixin {
   // Tab Controller principal

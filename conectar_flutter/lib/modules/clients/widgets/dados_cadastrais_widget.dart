@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
-import '../../../../core/widgets/inputs/custom_input_widget.dart';
+import '../../../core/widgets/inputs/custom_input_widget.dart';
 import '../client_form_controller.dart';
 import 'status_dropdown_widget.dart';
 import 'conecta_plus_checkbox_widget.dart';

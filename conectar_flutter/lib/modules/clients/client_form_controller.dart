@@ -4,8 +4,8 @@ import 'package:go_router/go_router.dart';
 import 'package:validatorless/validatorless.dart';
 import 'package:mask_text_input_formatter/mask_text_input_formatter.dart';
 
-import '../../../core/constants/route_constant.dart';
-import '../../../core/models/client_model.dart';
+import '../../core/constants/route_constant.dart';
+import '../../core/models/client_model.dart';
 import 'clients_controller.dart';
 
 class ClientFormController extends GetxController with StateMixin<ClientModel>, GetSingleTickerProviderStateMixin {

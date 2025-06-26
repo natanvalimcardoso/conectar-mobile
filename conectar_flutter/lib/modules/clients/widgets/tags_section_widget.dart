@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
-import '../../../../core/widgets/inputs/custom_input_widget.dart';
+import '../../../core/widgets/inputs/custom_input_widget.dart';
 import '../client_form_controller.dart';
 
 class TagsSectionWidget extends GetView<ClientFormController> {

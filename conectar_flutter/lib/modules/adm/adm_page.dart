@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
 import 'adm_controller.dart';
-import 'form/widgets/clients_tab_widget.dart';
-import 'form/widgets/form_tab_widget.dart';
+import '../form/widgets/clients_tab_widget.dart';
+import '../form/widgets/form_tab_widget.dart';
 
 class AdmPage extends GetView<AdmController> {
   const AdmPage({super.key});

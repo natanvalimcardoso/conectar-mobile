@@ -1,10 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
-import '../../clients/client_form_controller.dart';
-import '../../clients/widgets/app_bar_widget.dart';
-import '../../clients/widgets/client_form_widget.dart';
-
+import 'client_form_controller.dart';
+import 'widgets/app_bar_widget.dart';
+import 'widgets/client_form_widget.dart';
 
 class ClientFormPage extends GetView<ClientFormController> {
   const ClientFormPage({super.key});

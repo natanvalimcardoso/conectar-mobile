@@ -3,7 +3,7 @@ import 'package:get/get.dart';
 import 'package:validatorless/validatorless.dart';
 import 'package:mask_text_input_formatter/mask_text_input_formatter.dart';
 
-import '../../../core/models/client_model.dart';
+import '../../core/models/client_model.dart';
 import '../clients/clients_controller.dart';
 
 class AdmFormController extends GetxController with GetSingleTickerProviderStateMixin {
