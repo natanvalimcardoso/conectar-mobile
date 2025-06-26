@@ -9,24 +9,32 @@ class FormHeaderWidget extends GetView<AdmFormController> {
   @override
   Widget build(BuildContext context) {
     return Container(
-      color: Colors.white,
-      padding: const EdgeInsets.all(16),
+      width: double.infinity,
+      padding: const EdgeInsets.all(20),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        border: Border(
+          bottom: BorderSide(color: Colors.grey[200]!),
+        ),
+      ),
       child: Row(
         children: [
           const Icon(
             Icons.person_add,
             color: Color(0xFF4CAF50),
-            size: 24,
+            size: 28,
           ),
           const SizedBox(width: 12),
-          Obx(() => Text(
-            controller.pageTitle.value,
-            style: const TextStyle(
-              fontSize: 20,
-              fontWeight: FontWeight.bold,
-              color: Color(0xFF4CAF50),
-            ),
-          )),
+          Expanded(
+            child: Obx(() => Text(
+              controller.pageTitle.value,
+              style: const TextStyle(
+                fontSize: 24,
+                fontWeight: FontWeight.bold,
+                color: Color(0xFF2E7D32),
+              ),
+            )),
+          ),
         ],
       ),
     );

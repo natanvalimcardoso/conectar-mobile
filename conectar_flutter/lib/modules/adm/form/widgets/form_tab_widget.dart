@@ -12,13 +12,17 @@ class FormTabWidget extends GetView<AdmFormController> {
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      children: [
-        const FormHeaderWidget(),
-        const FormTabsWidget(),
-        const Expanded(child: FormContentWidget()),
-        const FormBottomActionsWidget(),
-      ],
+    return Container(
+      width: double.infinity,
+      height: double.infinity,
+      child: Column(
+        children: [
+          const FormHeaderWidget(),
+          const FormTabsWidget(),
+          const Expanded(child: FormContentWidget()),
+          const FormBottomActionsWidget(),
+        ],
+      ),
     );
   }
 } 

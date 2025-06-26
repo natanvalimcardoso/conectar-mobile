@@ -51,24 +51,58 @@ class _CustomInputWidgetState extends State<CustomInputWidget> {
       onChanged: widget.onChanged,
       focusNode: widget.focusNode,
       validator: widget.validator,
+      style: const TextStyle(
+        fontSize: 16,
+        color: Color(0xFF2E2E2E),
+      ),
       decoration: InputDecoration(
         hintText: widget.hintText,
-        border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
-        filled: false,
+        hintStyle: TextStyle(
+          color: Colors.grey[500],
+          fontSize: 16,
+        ),
+        border: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(8),
+          borderSide: BorderSide(color: Colors.grey[300]!),
+        ),
+        enabledBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(8),
+          borderSide: BorderSide(color: Colors.grey[300]!),
+        ),
+        focusedBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(8),
+          borderSide: const BorderSide(color: Color(0xFF4CAF50), width: 2),
+        ),
+        errorBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(8),
+          borderSide: const BorderSide(color: Colors.red, width: 2),
+        ),
+        focusedErrorBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(8),
+          borderSide: const BorderSide(color: Colors.red, width: 2),
+        ),
+        filled: true,
+        fillColor: Colors.white,
         suffixIcon: widget.isPasswordField
             ? IconButton(
                 onPressed: _togglePasswordVisibility,
                 icon: Icon(
                   _isPasswordVisible
-                      ? Icons.visibility_off
-                      : Icons.visibility,
+                      ? Icons.visibility_off_outlined
+                      : Icons.visibility_outlined,
                   color: Colors.grey[600],
+                  size: 22,
                 ),
+                splashRadius: 20,
               )
             : null,
         contentPadding: EdgeInsets.symmetric(
           horizontal: 16,
-          vertical: (widget.height ?? 65 - 20) / 2,
+          vertical: (widget.height ?? 56 - 16) / 2,
+        ),
+        errorStyle: const TextStyle(
+          fontSize: 12,
+          color: Colors.red,
         ),
       ),
     );

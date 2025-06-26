@@ -23,6 +23,14 @@ class AdmPage extends GetView<AdmController> {
               height: 24,
               color: Colors.white,
             ),
+            const SizedBox(width: 8),
+            const Text(
+              'Conectar',
+              style: TextStyle(
+                fontWeight: FontWeight.bold,
+                fontSize: 20,
+              ),
+            ),
           ],
         ),
         actions: [
@@ -37,6 +45,14 @@ class AdmPage extends GetView<AdmController> {
           indicatorColor: Colors.white,
           labelColor: Colors.white,
           unselectedLabelColor: Colors.white70,
+          labelStyle: const TextStyle(
+            fontSize: 16,
+            fontWeight: FontWeight.w600,
+          ),
+          unselectedLabelStyle: const TextStyle(
+            fontSize: 16,
+            fontWeight: FontWeight.normal,
+          ),
           tabs: const [
             Tab(text: 'Clientes'),
             Tab(text: 'Formulário'),
@@ -45,9 +61,9 @@ class AdmPage extends GetView<AdmController> {
       ),
       body: TabBarView(
         controller: controller.mainTabController,
-        children: [
-          const ClientsTabWidget(),
-          const FormTabWidget(),
+        children: const [
+          ClientsTabWidget(),
+          FormTabWidget(),
         ],
       ),
     );

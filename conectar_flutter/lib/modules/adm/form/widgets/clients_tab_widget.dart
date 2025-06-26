@@ -8,11 +8,15 @@ class ClientsTabWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const Column(
-      children: [
-        ClientsFiltersWidget(),
-        Expanded(child: ClientsListWidget()),
-      ],
+    return Container(
+      width: double.infinity,
+      height: double.infinity,
+      child: Column(
+        children: [
+          const ClientsFiltersWidget(),
+          const Expanded(child: ClientsListWidget()),
+        ],
+      ),
     );
   }
 } 
